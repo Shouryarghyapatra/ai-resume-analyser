@@ -1,21 +1,10 @@
 import os
-import re
 from pdf2image import convert_from_path
 import pytesseract
 
+from preprocess import clean_text
+
 resume_folder = "data/resumes"
-
-# Cleaning function
-def clean_text(text):
-
-    text = text.lower()
-
-    text = re.sub(r'[^\w\s]', '', text)
-
-    text = " ".join(text.split())
-
-    return text
-
 
 for filename in os.listdir(resume_folder):
 

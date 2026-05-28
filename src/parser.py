@@ -1,20 +1,12 @@
 import os
-import re
 import pdfplumber
+
+from preprocess import clean_text
 
 resume_folder = "data/resumes"
 
-# Text cleaning function
-def clean_text(text):
-
-    text = text.lower()
-
-    text = re.sub(r'[^\w\s]', '', text)
-
-    text = " ".join(text.split())
-
-    return text
-
+success_count = 0
+failed_count = 0
 
 for filename in os.listdir(resume_folder):
 
@@ -24,26 +16,41 @@ for filename in os.listdir(resume_folder):
 
         extracted_text = ""
 
-        with pdfplumber.open(pdf_path) as pdf:
+        try:
 
-            for page in pdf.pages:
+            with pdfplumber.open(pdf_path) as pdf:
 
-                page_text = page.extract_text()
+                for page in pdf.pages:
 
-                if page_text:
-                    extracted_text += page_text + " "
+                    page_text = page.extract_text()
 
-        # Clean each resume individually
-        cleaned_text = clean_text(extracted_text)
+                    if page_text:
+                        extracted_text += page_text + " "
 
-        print(f"\n----- {filename} -----\n")
+            # Clean text
+            cleaned_text = clean_text(extracted_text)
 
-        print(cleaned_text[:1000])
-success_count = 0
-failed_count = 0
-if cleaned_text.strip():
-    success_count += 1
-else:
-    failed_count += 1
-print(f"Successful: {success_count}")
+            print(f"\n----- {filename} -----\n")
+
+            print(cleaned_text[:1000])
+
+            # Success / failure tracking
+            if cleaned_text.strip():
+
+                success_count += 1
+
+            else:
+
+                failed_count += 1
+
+                print(f"{filename} -> Empty or unreadable PDF")
+
+        except Exception as e:
+
+            failed_count += 1
+
+            print(f"Error processing {filename}: {e}")
+
+print(f"\nSuccessful: {success_count}")
+
 print(f"Failed: {failed_count}")
