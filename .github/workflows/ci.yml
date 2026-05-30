@@ -1,0 +1,37 @@
+name: CI Pipeline - AI Resume Analyzer
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test import pipeline
+        run: |
+          python -c "from src.pipeline import match_resume; print('Pipeline import OK')"
+
+      - name: Test embedder import
+        run: |
+          python -c "from src.embedder import encode; print('Embedder OK')"
+
+      - name: Build Docker image
+        run: |
+          docker build -t ai-resume-analyser .
