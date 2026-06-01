@@ -18,9 +18,16 @@ def load_files(folder):
 
         if file.endswith(".txt"):
 
-            path = os.path.join(folder, file)
+            path = os.path.join(
+                folder,
+                file
+            )
 
-            with open(path, "r", encoding="utf-8") as f:
+            with open(
+                path,
+                "r",
+                encoding="utf-8"
+            ) as f:
 
                 text = f.read().strip()
 
@@ -30,14 +37,20 @@ def load_files(folder):
     return names, texts
 
 
-jd_names, jd_texts = load_files(JOB_FOLDER)
+jd_names, jd_texts = load_files(
+    JOB_FOLDER
+)
 
-jd_vectors = encode(jd_texts)
+jd_vectors = encode(
+    jd_texts
+)
 
 
 def match_resume(resume_text):
 
-    resume_vec = encode([resume_text])[0]
+    resume_vec = encode(
+        [resume_text]
+    )[0]
 
     top_k_idx, _ = get_top_k(
         resume_vec,
@@ -89,3 +102,18 @@ def match_resume(resume_text):
     )
 
     return scored_results
+
+
+def match_resume_to_jd(
+    resume_text,
+    jd_text
+):
+
+    result = rerank(
+        resume_text,
+        [jd_text]
+    )
+
+    return float(
+        result[0][1]
+    )
