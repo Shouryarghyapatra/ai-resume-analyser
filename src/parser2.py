@@ -1,3 +1,4 @@
+import pdfplumber
 from pdf2image import convert_from_path
 import pytesseract
 
@@ -10,17 +11,24 @@ def extract_resume_text(pdf_path):
 
     try:
 
+        with pdfplumber.open(pdf_path) as pdf:
+
+            for page in pdf.pages:
+
+                page_text = page.extract_text()
+
+                if page_text:
+                    text += page_text + " "
+
+        if len(text.strip()) > 100:
+            return clean_text(text)
+
         pages = convert_from_path(pdf_path)
 
         for page in pages:
+            text += pytesseract.image_to_string(page)
 
-            extracted_text = pytesseract.image_to_string(page)
-
-            text += extracted_text + " "
-
-        cleaned_text = clean_text(text)
-
-        return cleaned_text
+        return clean_text(text)
 
     except Exception as e:
 
