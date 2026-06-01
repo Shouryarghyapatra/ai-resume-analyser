@@ -17,7 +17,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel
 
 # install torch separately (important for stability)
-RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # install remaining python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
